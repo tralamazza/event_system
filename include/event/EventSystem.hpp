@@ -2,13 +2,32 @@
 #define EVENT_EVENT_SYSTEM_HPP_
 
 #include <algorithm>
+#include <array>
 #include <functional>
-#include <map>
 #include <mutex>
 #include <vector>
 
 namespace event {
 
+template<typename T, std::size_t Max>
+class Event
+{
+public:
+    static constexpr std::size_t Count = Max;
+
+    constexpr Event(T i) noexcept : m_id { i }
+    {
+        // TODO: it should not possible to create instances with i >= Max
+    }
+
+    constexpr T id() const noexcept { return m_id; }
+
+private:
+    T m_id;
+};
+
+// TODO: with more template-meta-programming, the Key type could be restricted a bit more
+// Concepts would really shine here.
 /*!
  * @brief A generic event system.
  *
@@ -19,6 +38,11 @@ class EventSystem
 {
 public:
     using Callback = std::function<void(Key)>;
+    struct CallbackStore
+    {
+        std::vector<Callback> data;
+        std::mutex mtx;
+    };
 
     /*!
      * @brief Creates a new instance of the event system with a default instance of the executor.
@@ -48,25 +72,25 @@ public:
     void triggerEvent(Key k);
 
 private:
-    std::mutex m_mapAccess {};
-    std::map<Key, std::vector<Callback>> m_callbacks {};
+    std::array<CallbackStore, Key::Count> m_storage {};
     Executor m_executor;
 };
 
 template<typename Key, typename Executor>
 void EventSystem<Key, Executor>::registerCallback(Key k, Callback cb)
 {
-    std::lock_guard<std::mutex> lock { m_mapAccess };
-    auto &callbacks = m_callbacks[k];
-    callbacks.emplace_back(std::move(cb));
+    auto &callbacks = m_storage[k.id()];
+    std::lock_guard<std::mutex> lock { callbacks.mtx };
+    callbacks.data.emplace_back(std::move(cb));
 }
 
 template<typename Key, typename Executor>
 void EventSystem<Key, Executor>::triggerEvent(Key k)
 {
-    std::lock_guard<std::mutex> lock { m_mapAccess };
-    auto const &callbacks = m_callbacks[k];
-    m_executor.execute(std::begin(callbacks), std::end(callbacks), k);
+    auto &callbacks = m_storage[k.id()];
+    // Passing a reference here is safe, because the executor is a member of this instance, so the
+    // reference does never outlive its storage.
+    m_executor.execute(callbacks, k);
 }
 
 } // namespace event

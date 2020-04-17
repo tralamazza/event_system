@@ -18,30 +18,17 @@ Consider:
 
 ### Design and rationale
 
-- The key for each `EventSystem` instance is generic,
-  which makes it possible to use strong enumerations (i.e. `enum class`).
-
-  The current approach is extremely flexible and allows the use of unbounded types,
-  which makes it hard to prevent errors.
-  The current C++ type system does not directly support the introspection of enum types to determine the number of elements,
-  but a wrapper type which exposes the number could be used.
-  But this makes it necessary to keep the event type enum and its wrapper type in sync,
-  which is a huge drawback in itself.
-  There are several ways around this limitations,
-  but most involve the use of macros or elaborate template-meta-programming,
-  which significantly hampers readability and make the implementation harder to understand.
-  A third party solution is available on [GitHub](https://github.com/Neargye/magic_enum).
-- Keys and callbacks are stored in a map of keys to vectors of callbacks,
-  which makes accessing the callbacks reasonably performant with O(log(n)).
-
-  If a type with a limited set of values,
-  the storage could be a fixed-size array,
-  which would reduce the access times to O(1).
-  It also would reduce the necessary storage a bit,
-  because the key must no longer be stored with the associated callbacks.
-  Further,
-  it could improve the performance by removing the mutex which protects the map from concurrent modifications,
-  supposed it was contended.
+- The key for each `EventSystem` instance is a template,
+  but expected to inherit from `Event`.
+  The current implementation is incomplete and unsafe,
+  as it doesn't really enforce a limit on the contained values.
+  For production code this should be fixed,
+  but for this demonstration it currently works well enough.
+- The callbacks are stored in an array of vectors of callbacks,
+  which makes accessing the callbacks performant with O(1).
+  Also,
+  it doesn't need a lock on *all* callbacks,
+  as each event type has its own lock.
 
   Currently,
   `std::vector` is used for the sake of a simpler and more general implementation.

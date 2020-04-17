@@ -1,6 +1,8 @@
 #ifndef EVENT_EXECUTORS_SIMPLE_EXECUTOR_HPP_
 #define EVENT_EXECUTORS_SIMPLE_EXECUTOR_HPP_
 
+#include <event/EventSystem.hpp>
+
 namespace event {
 
 /*!
@@ -10,11 +12,14 @@ template<typename Event>
 class SimpleExecutor
 {
 public:
-    template<typename CallbackIterator>
-    void execute(CallbackIterator first, CallbackIterator last, Event event)
+    using EventSystemType = EventSystem<Event, SimpleExecutor<Event>>;
+    using CallbackStore = typename EventSystemType::CallbackStore;
+
+    void execute(CallbackStore &callbacks, Event event)
     {
-        for (auto iter = first; iter < last; ++iter) {
-            (*iter)(event);
+        std::lock_guard<std::mutex> lock { callbacks.mtx };
+        for (auto const &cb : callbacks.data) {
+            cb(event);
         }
     }
 };

@@ -6,11 +6,14 @@
 
 namespace {
 
-enum class Event {
-    StandaloneFunction,
-    LambdaFunction,
-    MemberFunction,
+struct Event final : public event::Event<std::uint8_t, 3>
+{
+    constexpr Event(std::uint8_t i) : event::Event<std::uint8_t, 3> { i } {};
 };
+
+static constexpr Event StandaloneFunction { 0 };
+static constexpr Event LambdaFunction { 1 };
+static constexpr Event MemberFunction { 2 };
 
 using EventSystem = event::EventSystem<Event, event::SimpleExecutor<Event>>;
 
@@ -38,11 +41,11 @@ SCENARIO("event system can register and remove callbacks")
 
         WHEN("a standalone function is registered")
         {
-            eventSystem.registerCallback(Event::StandaloneFunction, standaloneFunction);
+            eventSystem.registerCallback(StandaloneFunction, standaloneFunction);
 
             THEN("it can be called")
             {
-                eventSystem.triggerEvent(Event::StandaloneFunction);
+                eventSystem.triggerEvent(StandaloneFunction);
 
                 REQUIRE(g_standaloneFunctionWasCalled == true);
             }
@@ -51,13 +54,12 @@ SCENARIO("event system can register and remove callbacks")
         WHEN("a lambda is registered")
         {
             bool lambdaWasCalled = false;
-            eventSystem.registerCallback(Event::LambdaFunction, [&lambdaWasCalled](Event /* ev */) {
-                lambdaWasCalled = true;
-            });
+            eventSystem.registerCallback(
+                    LambdaFunction, [&lambdaWasCalled](Event /* ev */) { lambdaWasCalled = true; });
 
             THEN("it can be called")
             {
-                eventSystem.triggerEvent(Event::LambdaFunction);
+                eventSystem.triggerEvent(LambdaFunction);
 
                 REQUIRE(lambdaWasCalled == true);
             }
@@ -68,12 +70,11 @@ SCENARIO("event system can register and remove callbacks")
             using std::placeholders::_1;
 
             Callback callback {};
-            eventSystem.registerCallback(Event::MemberFunction,
-                                         std::bind(&Callback::call, &callback, _1));
+            eventSystem.registerCallback(MemberFunction, std::bind(&Callback::call, &callback, _1));
 
             THEN("it can be called")
             {
-                eventSystem.triggerEvent(Event::MemberFunction);
+                eventSystem.triggerEvent(MemberFunction);
 
                 REQUIRE(callback.wasCalled == true);
             }
