@@ -62,9 +62,14 @@ Consider:
   which is necessary to make `std::remove()` work.
   Because `std::function` does not provide this operator,
   the unregistration of events is currently not implemented.
-- The Callbacks are executed on the thread which called `EventSystem::triggerEvent()`.
-  If this thread was not allowed to block for the arbitrary time it takes the callback to execute,
-  a worker thread or even a thread pool should be used to dispatch those callbacks.
+- The callback execution is controlled by the `Executor` template argument of the `Eventsystem` class.
+  Two examples are provided:
+
+  - A simple executor which just executes the callbacks on the thread that called `EventSystem::triggerEvent()`.
+  - An implementation using a worker thread,
+    which lets the caller continue after triggering the event.
+    This could be extended to use a thread pool instead of a single worker thread if more performance was necessary.
+    Another possibility would be a dedicated thread per event.
 
 ### Building and running
 

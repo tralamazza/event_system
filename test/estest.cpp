@@ -1,8 +1,8 @@
 #include <event/EventSystem.hpp>
+#include <event/executors/AsyncExecutor.hpp> // Just for compile tests
+#include <event/executors/SimpleExecutor.hpp>
 
 #include "catch.hpp"
-
-using namespace event;
 
 namespace {
 
@@ -11,6 +11,8 @@ enum class Event {
     LambdaFunction,
     MemberFunction,
 };
+
+using EventSystem = event::EventSystem<Event, event::SimpleExecutor<Event>>;
 
 bool g_standaloneFunctionWasCalled = false;
 
@@ -32,7 +34,7 @@ SCENARIO("event system can register and remove callbacks")
 {
     GIVEN("an event system")
     {
-        EventSystem<Event> eventSystem {};
+        EventSystem eventSystem {};
 
         WHEN("a standalone function is registered")
         {

@@ -14,11 +14,23 @@ namespace event {
  *
  * Events can be registered and triggered.
  */
-template<typename Key>
+template<typename Key, typename Executor>
 class EventSystem
 {
 public:
     using Callback = std::function<void(Key)>;
+
+    /*!
+     * @brief Creates a new instance of the event system with a default instance of the executor.
+     */
+    EventSystem() : m_executor {} {};
+
+    /*!
+     * @brief Creates a new instance of the event system with the executor instance.
+     *
+     * @param executor The executor instance to use.
+     */
+    EventSystem(Executor executor) : m_executor { std::move(executor) } { }
 
     /*!
      * @brief Registers a callback for an event.
@@ -36,26 +48,25 @@ public:
     void triggerEvent(Key k);
 
 private:
-    std::mutex m_mapAccess{};
-    std::map<Key, std::vector<Callback>> m_callbacks{};
+    std::mutex m_mapAccess {};
+    std::map<Key, std::vector<Callback>> m_callbacks {};
+    Executor m_executor;
 };
 
-template<typename Key>
-void EventSystem<Key>::registerCallback(Key k, Callback cb)
+template<typename Key, typename Executor>
+void EventSystem<Key, Executor>::registerCallback(Key k, Callback cb)
 {
-    std::lock_guard<std::mutex> lock{m_mapAccess};
+    std::lock_guard<std::mutex> lock { m_mapAccess };
     auto &callbacks = m_callbacks[k];
     callbacks.emplace_back(std::move(cb));
 }
 
-template<typename Key>
-void EventSystem<Key>::triggerEvent(Key k)
+template<typename Key, typename Executor>
+void EventSystem<Key, Executor>::triggerEvent(Key k)
 {
-    std::lock_guard<std::mutex> lock{m_mapAccess};
+    std::lock_guard<std::mutex> lock { m_mapAccess };
     auto const &callbacks = m_callbacks[k];
-    for (auto const &cb : callbacks) {
-        cb(k);
-    }
+    m_executor.execute(std::begin(callbacks), std::end(callbacks), k);
 }
 
 } // namespace event
