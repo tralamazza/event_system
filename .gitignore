@@ -1,0 +1,7 @@
+*.o
+*.vscode
+*.out
+googletest/
+tests/output
+tests/event_system_tests
+main
