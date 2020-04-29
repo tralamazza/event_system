@@ -37,4 +37,32 @@ EventSystem has interfaces which allows to register functions and Execute the fu
 ## Possible Improvements
 
 1. Using std::vector<std::function<void, void (*)(void *)>> as common storage/generic callable container for all callables and give a generic event id for all events to invoke again (Tried this, faced issue in reinterpret_cast of callable).
+2. Allocate constant memory for registration, since the function which needs to be registered are known at compile time
+
+## Install CMake
+### CMake
+https://cmake.org/install/
+
+## Build
+Go to event_system path. Execute the following commands.
+1. cmake CMakeLists.txt
+2. make
+
+EventSystem is built and run, an executable 'EventSystem' will be created.
+
+## Run
+
+In the event_system path, 'EventSystem' executable will be created after successful build.
+
+Execute the following command to run the testcases.
+./CircularBuffer
+
+## Type Safety
+
+enum class is used for key, which makes strong type
+
+## Memory Requirements
+
+Using multiple data types and more number of arguments increases the binary size
+
 
