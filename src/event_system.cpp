@@ -1,21 +1,17 @@
 #include <../include/event_system.h>
-void EventSystem::RegisterAnimationNotification(
-    const std::function<void()>& func) {
+void EventSystem::RegisterAnimationNotification(const FunctionA& func) {
   animation_events.push_back(Delegate(func));
 }
 
-void EventSystem::RegisterTimeoutNotification(
-    const std::function<void(std::int64_t)>& func) {
+void EventSystem::RegisterTimeoutNotification(const FunctionT& func) {
   timeout_events.push_back(Delegate(func));
 }
 
-void EventSystem::RegisterHarwardInterrupt(
-    const std::function<void(const std::int64_t&)>& func) {
+void EventSystem::RegisterHarwardInterrupt(const FunctionH& func) {
   hardware_interrupts.push_back(Delegate(func));
 }
 
-void EventSystem::RegisterSoftwareInterrupt(
-    const std::function<void(std::int16_t)>& func) {
+void EventSystem::RegisterSoftwareInterrupt(const FunctionS& func) {
   software_interrupts.push_back(Delegate(func));
 }
 

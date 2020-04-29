@@ -12,18 +12,16 @@ enum class Event {
   kTimeoutNotificaton
 };
 
-using functionA = std::function<void()>;
-using functionT = std::function<void(std::int64_t)>;
-using functionH = std::function<void(const std::int64_t&)>;
-using functionS = std::function<void(std::int16_t)>;
+using FunctionA = std::function<void()>;
+using FunctionT = std::function<void(std::int64_t)>;
+using FunctionH = std::function<void(const std::int64_t&)>;
+using FunctionS = std::function<void(std::int16_t)>;
 class EventSystem {
  public:
-  void RegisterAnimationNotification(const std::function<void()>& func);
-  void RegisterTimeoutNotification(
-      const std::function<void(std::int64_t)>& func);
-  void RegisterHarwardInterrupt(
-      const std::function<void(const std::int64_t&)>& func);
-  void RegisterSoftwareInterrupt(const std::function<void(std::int16_t)>& func);
+  void RegisterAnimationNotification(const FunctionA& func);
+  void RegisterTimeoutNotification(const FunctionT& func);
+  void RegisterHarwardInterrupt(const FunctionH& func);
+  void RegisterSoftwareInterrupt(const FunctionS& func);
   void ExecuteAll(const Event& event, const std::any& value = nullptr);
   void Execute(const Event& event, const EventId& event_id,
                const std::any& value = nullptr);
