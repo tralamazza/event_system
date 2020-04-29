@@ -1,9 +1,8 @@
+#ifndef EVENT_SYSTEM_H
+#define EVENT_SYSTEM_H
 #include <delegate.h>
 #include <any>
 #include <vector>
-#ifndef EVENT_SYSTEM_H
-#define EVENT_SYSTEM_H
-using EventId = size_t;
 
 enum class Event {
   kAnimationNotification,
@@ -11,7 +10,7 @@ enum class Event {
   kHardwareInterrupt,
   kTimeoutNotificaton
 };
-
+using EventId = size_t;
 using FunctionA = std::function<void()>;
 using FunctionT = std::function<void(std::int64_t)>;
 using FunctionH = std::function<void(const std::int64_t&)>;
@@ -27,10 +26,9 @@ class EventSystem {
                const std::any& value = nullptr);
 
  private:
-  std::vector<Delegate<std::function<void()>>> animation_events;
-  std::vector<Delegate<std::function<void(std::int64_t)>>> timeout_events;
-  std::vector<Delegate<std::function<void(const std::int64_t&)>>>
-      hardware_interrupts;
-  std::vector<Delegate<std::function<void(std::int16_t)>>> software_interrupts;
+  std::vector<Delegate<FunctionA>> animation_events;
+  std::vector<Delegate<FunctionT>> timeout_events;
+  std::vector<Delegate<FunctionH>> hardware_interrupts;
+  std::vector<Delegate<FunctionS>> software_interrupts;
 };
 #endif

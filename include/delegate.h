@@ -7,7 +7,6 @@ class Delegate {
   Delegate(Func func) : func_{func} {}
   template <typename... Args>
   decltype(auto) operator()(Args&&... args) {
-    // std::cout << __PRETTY_FUNCTION__ << std::endl;
     return std::invoke(func_, std::forward<Args>(args)...);
   }
 
