@@ -4,7 +4,11 @@
 template <typename Func>
 class Delegate {
  public:
-  Delegate(Func func) : func_{func} {}
+  explicit Delegate(Func func) : func_{func} {}
+  Delegate(const Delegate&) = delete;
+  Delegate(Delegate&&) = default;
+  Delegate& operator=(Delegate&&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
   template <typename... Args>
   decltype(auto) operator()(Args&&... args) {
     return std::invoke(func_, std::forward<Args>(args)...);

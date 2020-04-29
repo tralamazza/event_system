@@ -17,6 +17,11 @@ using FunctionH = std::function<void(const std::int64_t&)>;
 using FunctionS = std::function<void(std::int16_t)>;
 class EventSystem {
  public:
+  EventSystem() = default;
+  EventSystem(const EventSystem&) = delete;
+  EventSystem(EventSystem&&) = delete;
+  EventSystem& operator=(EventSystem&&) = delete;
+  EventSystem& operator=(const EventSystem&) = delete;
   void RegisterAnimationNotification(const FunctionA& func);
   void RegisterTimeoutNotification(const FunctionT& func);
   void RegisterHarwardInterrupt(const FunctionH& func);
