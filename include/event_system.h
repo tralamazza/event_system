@@ -31,9 +31,9 @@ class EventSystem {
                const std::any& value = nullptr);
 
  private:
-  std::vector<Delegate<FunctionA>> animation_events;
-  std::vector<Delegate<FunctionT>> timeout_events;
-  std::vector<Delegate<FunctionH>> hardware_interrupts;
-  std::vector<Delegate<FunctionS>> software_interrupts;
+  std::vector<Delegate<FunctionA>> animation_events_;
+  std::vector<Delegate<FunctionT>> timeout_events_;
+  std::vector<Delegate<FunctionH>> hardware_interrupts_;
+  std::vector<Delegate<FunctionS>> software_interrupts_;
 };
 #endif
