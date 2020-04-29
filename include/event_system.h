@@ -18,9 +18,11 @@ using functionH = std::function<void(const std::int64_t&)>;
 using functionS = std::function<void(std::int16_t)>;
 class EventSystem {
  public:
-  void Register(const std::function<void()>& func);
-  void Register(const std::function<void(std::int64_t)>& func);
-  void RegisterConst(const std::function<void(const std::int64_t&)>& func);
+  void RegisterAnimationNotification(const std::function<void()>& func);
+  void RegisterTimeoutNotification(
+      const std::function<void(std::int64_t)>& func);
+  void RegisterHarwardInterrupt(
+      const std::function<void(const std::int64_t&)>& func);
   void RegisterSoftwareInterrupt(const std::function<void(std::int16_t)>& func);
   void ExecuteAll(const Event& event, const std::any& value = nullptr);
   void Execute(const Event& event, const EventId& event_id,
