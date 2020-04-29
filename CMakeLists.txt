@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.10)
+project(EventSystem)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS "-O0 -std=c++17 -pthread")
+ 
+find_package(GTest REQUIRED)
+include_directories(include src ${GTEST_INCLUDE_DIRS})
+add_executable(EventSystem src/main.cpp src/event_system.cpp)
+target_link_libraries(EventSystem ${GTEST_LIBRARIES} pthread gtest gtest_main)
+add_test(EventSystem EventSystem)
+add_custom_target(event_system ALL DEPENDS EventSystem COMMAND EventSystem)
