@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.10)
+project(EventSystem)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS "-O3 -std=c++17 -pthread")
+ 
+include_directories(include)
+add_executable(EventSystem src/main.cpp src/event_system.cpp)
+target_link_libraries(EventSystem)
+add_test(EventSystem EventSystem)
+add_custom_target(event_system ALL DEPENDS EventSystem COMMAND EventSystem)
